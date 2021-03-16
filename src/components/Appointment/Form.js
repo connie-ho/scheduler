@@ -22,7 +22,7 @@ export default function Form(props) {
       <section className="appointment__card-left">
         <form 
           autoComplete="off"
-          onSubmit={ e=> e.preventDefault()}  
+          onSubmit={e => e.preventDefault()}  
         >
           <input
             className="appointment__create-input text--semi-bold"
