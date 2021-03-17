@@ -18,8 +18,6 @@ export default function Appointment(props) {
     props.interview ? SHOW : EMPTY
   );
 
-  const interviewers = []
-
   return (
     <>
       <article className="appointment">
@@ -33,7 +31,7 @@ export default function Appointment(props) {
         )}
         {mode === CREATE && (
           <Form 
-            interviewers={interviewers} 
+            interviewers={props.interviewers} 
             onCancel={back}
           />
         )}
