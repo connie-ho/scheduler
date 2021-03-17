@@ -53,7 +53,7 @@ export default function Application(props) {
           ...state,
           appointments
         });
-        return res;
+        // return res;
       });
   }
 
