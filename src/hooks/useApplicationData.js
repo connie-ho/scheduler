@@ -70,16 +70,13 @@ export default function useApplicationdata(){
 
     return axios.put(`/api/appointments/${id}`, appointment)
       .then(res => {
-        setState(prev => ({
-          ...prev,
-          appointments
-        }));
+        setState(prev => ({...prev, appointments}));
         return res;
       })
       .then(res => {
         setState(prev => ({...prev, days: calcSpots(prev)}))
       })
-      .catch(err => console.log(err.message))
+      // .catch(err => console.log(err.message))
   }
 
   const cancelInterview = function(id) {
@@ -96,16 +93,13 @@ export default function useApplicationdata(){
 
     return axios.delete(`/api/appointments/${id}`)
       .then(res => {
-        setState(prev => ({
-          ...prev, 
-          appointments
-        }))
+        setState(prev => ({...prev, appointments}))
         return res;
       })
       .then(res => {
         setState(prev => ({...prev, days: calcSpots(prev)}))
       })
-      .catch(err => console.log(err.message))
+      // .catch(err => console.log(err.message))
   }
 
   return {
