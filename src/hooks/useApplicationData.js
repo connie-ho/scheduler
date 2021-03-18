@@ -1,4 +1,4 @@
-import {useEffect, useState, useReducer} from 'react';
+import {useEffect,  useReducer} from 'react';
 import axios from "axios";
 import { getAppointmentsForDay } from "../helpers/selectors";
 
@@ -51,6 +51,42 @@ export default function useApplicationdata(){
       dispatch({type: SET_APPLICATION_DATA, days, appointments, interviewers})
     })
   }, []); 
+
+  // set webSocket connection
+  const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+  
+  useEffect(() => {
+
+    webSocket.onopen = function(e) {
+      webSocket.send("ping")
+      console.log("pong")
+    }
+    
+    //listen to data from the websocket server
+    webSocket.onmessage = function (e) {
+      
+      const res = JSON.parse(e.data);
+      if(res.type === SET_INTERVIEW) {
+
+        const id = res.id;
+        const interview = res.interview;
+
+        const appointment = {
+          ...state.appointments[id],
+          interview: interview? { ...interview } : null
+        };
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment
+        };
+
+        dispatch({type: SET_INTERVIEW, appointments})
+
+      }  
+    }
+
+    return ()=>{webSocket.close()}; //cleanup function
+  },[webSocket]);
   
   const setDay = day => dispatch({type: SET_DAY, day})
 
@@ -80,7 +116,7 @@ export default function useApplicationdata(){
   }
 
 
-  const bookInterview = function(id, interview) {
+  function bookInterview (id, interview) {
     
     const appointment = {
       ...state.appointments[id],
@@ -101,7 +137,7 @@ export default function useApplicationdata(){
       })
   }
 
-  const cancelInterview = function(id) {
+  function cancelInterview (id) {
 
     const appointment = {
       ...state.appointments[id],
