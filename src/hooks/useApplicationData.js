@@ -70,10 +70,10 @@ export default function useApplicationdata(){
 
     return axios.put(`/api/appointments/${id}`, appointment)
       .then(res => {
-        setState({
-          ...state,
+        setState(prev => ({
+          ...prev,
           appointments
-        });
+        }));
         return res;
       })
       .then(res => {
