@@ -116,7 +116,6 @@ export default function useApplicationdata(){
     return axios.delete(`/api/appointments/${id}`)
       .then(res => {
         dispatch({type: SET_INTERVIEW, appointments});
-        // return prev
       })
       .then(res => {
         dispatch({type: SET_SPOTS})
