@@ -30,9 +30,10 @@ export default function useApplicationdata(){
   const setDay = day => setState({...state, day});
 
   const calcSpots = function(prev){
-
+    // pass in prev state as old state wouldn't have updated with the current appointments data yet
+    
     const dailyAppointments = getAppointmentsForDay(prev, prev.day);
-    // console.log(dailyAppointments)
+
     let count = 5;
 
     for(const appointment of dailyAppointments) {
@@ -51,8 +52,6 @@ export default function useApplicationdata(){
     const days = [...prev.days];
     days[filteredDayIndex] = day;
 
-    console.log(count)
-    console.log(day)
     return days
   }
 
