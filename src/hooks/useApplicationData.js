@@ -1,10 +1,37 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useReducer} from 'react';
 import axios from "axios";
 import { getAppointmentsForDay } from "../helpers/selectors";
 
 export default function useApplicationdata(){
 
-  const [state, setState] = useState({
+  const SET_DAY = "SET_DAY";
+  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+  const SET_INTERVIEW = "SET_INTERVIEW";
+  const SET_SPOTS = "SET_SPOTS";
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case SET_DAY:
+        return {...state, day: action.day};
+      case SET_APPLICATION_DATA:
+        return {
+          ...state, 
+          days: action.days, 
+          appointments: action.appointments,
+          interviewers: action.interviewers
+        }
+      case SET_INTERVIEW: 
+        return {...state, appointments: action.appointments};
+      case SET_SPOTS:
+        return {...state, days: calcSpots(state)}
+      default:
+        throw new Error(
+          `Tried to reduce with unsupported action type: ${action.type}`
+        );
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
@@ -18,21 +45,18 @@ export default function useApplicationdata(){
       axios.get("api/appointments"),
       axios.get("api/interviewers")
     ]).then((all) => {
-      setState(prev => ({
-        ...prev, 
-        days: [...all[0].data], 
-        appointments: {...all[1].data},
-        interviewers: {...all[2].data}
-      }))
+      const days = [...all[0].data];
+      const appointments = {...all[1].data};
+      const interviewers =  {...all[2].data};
+      dispatch({type: SET_APPLICATION_DATA, days, appointments, interviewers})
     })
   }, []); 
   
-  const setDay = day => setState({...state, day});
+  const setDay = day => dispatch({type: SET_DAY, day})
 
-  const calcSpots = function(prev){
+  function calcSpots(state){
     // pass in prev state as old state wouldn't have updated with the current appointments data yet
-    
-    const dailyAppointments = getAppointmentsForDay(prev, prev.day);
+    const dailyAppointments = getAppointmentsForDay(state, state.day);
 
     let count = 5;
 
@@ -42,14 +66,14 @@ export default function useApplicationdata(){
       }
     }
 
-    const filteredDayIndex = prev.days.filter(prevDay => prevDay.name === prev.day)[0].id - 1
+    const filteredDayIndex = state.days.filter(stateDay => stateDay.name === state.day)[0].id - 1
     
     const day = {
-      ...prev.days[filteredDayIndex],
+      ...state.days[filteredDayIndex],
       spots: count
     };
 
-    const days = [...prev.days];
+    const days = [...state.days];
     days[filteredDayIndex] = day;
 
     return days
@@ -70,13 +94,11 @@ export default function useApplicationdata(){
 
     return axios.put(`/api/appointments/${id}`, appointment)
       .then(res => {
-        setState(prev => ({...prev, appointments}));
-        return res;
+        dispatch({type: SET_INTERVIEW, appointments});
       })
-      .then(res => {
-        setState(prev => ({...prev, days: calcSpots(prev)}))
+      .then(prev => {
+        dispatch({type: SET_SPOTS})
       })
-      // .catch(err => console.log(err.message))
   }
 
   const cancelInterview = function(id) {
@@ -93,13 +115,12 @@ export default function useApplicationdata(){
 
     return axios.delete(`/api/appointments/${id}`)
       .then(res => {
-        setState(prev => ({...prev, appointments}))
-        return res;
+        dispatch({type: SET_INTERVIEW, appointments});
+        // return prev
       })
       .then(res => {
-        setState(prev => ({...prev, days: calcSpots(prev)}))
+        dispatch({type: SET_SPOTS})
       })
-      // .catch(err => console.log(err.message))
   }
 
   return {
