@@ -59,7 +59,6 @@ export default function useApplicationdata(){
 
     webSocket.onopen = function(e) {
       webSocket.send("ping")
-      console.log("pong")
     }
     
     //listen to data from the websocket server
@@ -81,12 +80,12 @@ export default function useApplicationdata(){
         };
 
         dispatch({type: SET_INTERVIEW, appointments})
-
+        dispatch({type: SET_SPOTS})
       }  
     }
 
     return ()=>{webSocket.close()}; //cleanup function
-  },[webSocket]);
+  },[webSocket, state.appointments]);
   
   const setDay = day => dispatch({type: SET_DAY, day})
 
