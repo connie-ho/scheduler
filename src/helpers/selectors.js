@@ -3,6 +3,7 @@ export function getAppointmentsForDay(state, day) {
   const res = [];
 
   const filteredDay = state.days.filter(stateDay => stateDay.name === day)
+  
   if(!filteredDay.length) {
     return res;
   }

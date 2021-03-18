@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import axios from "axios";
+import { getAppointmentsForDay } from "../helpers/selectors";
 
 export default function useApplicationdata(){
 
@@ -28,6 +29,34 @@ export default function useApplicationdata(){
   
   const setDay = day => setState({...state, day});
 
+  const calcSpots = function(prev){
+
+    const dailyAppointments = getAppointmentsForDay(prev, prev.day);
+    // console.log(dailyAppointments)
+    let count = 5;
+
+    for(const appointment of dailyAppointments) {
+      if(appointment.interview){
+        count -= 1
+      }
+    }
+
+    const filteredDayIndex = prev.days.filter(prevDay => prevDay.name === prev.day)[0].id - 1
+    
+    const day = {
+      ...prev.days[filteredDayIndex],
+      spots: count
+    };
+
+    const days = [...prev.days];
+    days[filteredDayIndex] = day;
+
+    console.log(count)
+    console.log(day)
+    return days
+  }
+
+
   const bookInterview = function(id, interview) {
     
     const appointment = {
@@ -46,8 +75,12 @@ export default function useApplicationdata(){
           ...state,
           appointments
         });
-        // return res;
-      });
+        return res;
+      })
+      .then(res => {
+        setState(prev => ({...prev, days: calcSpots(prev)}))
+      })
+      .catch(err => console.log(err.message))
   }
 
   const cancelInterview = function(id) {
@@ -64,12 +97,16 @@ export default function useApplicationdata(){
 
     return axios.delete(`/api/appointments/${id}`)
       .then(res => {
-        setState({
-          ...state, 
+        setState(prev => ({
+          ...prev, 
           appointments
-        })
+        }))
         return res;
-      });
+      })
+      .then(res => {
+        setState(prev => ({...prev, days: calcSpots(prev)}))
+      })
+      .catch(err => console.log(err.message))
   }
 
   return {
