@@ -23,7 +23,7 @@ export default function useApplicationdata(){
       case SET_INTERVIEW: 
         return {...state, appointments: action.appointments};
       case SET_SPOTS:
-        return {...state, days: calcSpots(state)}
+        return {...state, days: updateSpots(action.id, state)}
       default:
         throw new Error(
           `Tried to reduce with unsupported action type: ${action.type}`
@@ -52,10 +52,10 @@ export default function useApplicationdata(){
     })
   }, []); 
 
-  // set webSocket connection
-  const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
   
+  // set webSocket connection
   useEffect(() => {
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
 
     webSocket.onopen = function(e) {
       webSocket.send("ping")
@@ -80,18 +80,27 @@ export default function useApplicationdata(){
         };
 
         dispatch({type: SET_INTERVIEW, appointments})
-        dispatch({type: SET_SPOTS})
+        dispatch({type: SET_SPOTS, id})
       }  
     }
 
     return ()=>{webSocket.close()}; //cleanup function
-  },[webSocket, state.appointments]);
+  },[state.appointments]);
   
   const setDay = day => dispatch({type: SET_DAY, day})
 
-  function calcSpots(state){
+  function updateSpots(id, state){ 
+    // pass in prev state and appointment id to update that day's spots
     // pass in prev state as old state wouldn't have updated with the current appointments data yet
-    const dailyAppointments = getAppointmentsForDay(state, state.day);
+
+    let dayIndex = 0;
+    for (let i = 0; i < state.days.length; i++) {
+      if (state.days[i].appointments.find(elem => elem === id)) {
+        dayIndex = i;
+      }
+    }
+
+    const dailyAppointments = getAppointmentsForDay(state, state.days[dayIndex].name);
 
     let count = 5;
 
@@ -101,15 +110,13 @@ export default function useApplicationdata(){
       }
     }
 
-    const filteredDayIndex = state.days.filter(stateDay => stateDay.name === state.day)[0].id - 1
-    
     const day = {
-      ...state.days[filteredDayIndex],
+      ...state.days[dayIndex],
       spots: count
     };
 
     const days = [...state.days];
-    days[filteredDayIndex] = day;
+    days[dayIndex] = day;
 
     return days
   }
@@ -132,7 +139,7 @@ export default function useApplicationdata(){
         dispatch({type: SET_INTERVIEW, appointments});
       })
       .then(prev => {
-        dispatch({type: SET_SPOTS})
+        dispatch({type: SET_SPOTS, id})
       })
   }
 
@@ -153,7 +160,7 @@ export default function useApplicationdata(){
         dispatch({type: SET_INTERVIEW, appointments});
       })
       .then(res => {
-        dispatch({type: SET_SPOTS})
+        dispatch({type: SET_SPOTS, id})
       })
   }
 
