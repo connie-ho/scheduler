@@ -89,6 +89,21 @@ export default {
         status: 204, 
         statusText: "No Content" 
     })};
+
+    if (url === "/api/appointments/2") {
+      return Promise.resolve({ 
+        status: 204, 
+        statusText: "No Content" 
+    })};
+  }),
+
+
+  delete: jest.fn(url => {
+    if (url === "/api/appointments/2") {
+      return Promise.resolve({ 
+        status: 204, 
+        statusText: "No Content" 
+    })};
   })
 
 
