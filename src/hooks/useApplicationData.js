@@ -102,7 +102,7 @@ export default function useApplicationdata(){
 
     const dailyAppointments = getAppointmentsForDay(state, state.days[dayIndex].name);
 
-    let count = 5;
+    let count = dailyAppointments.length;
 
     for(const appointment of dailyAppointments) {
       if(appointment.interview){
