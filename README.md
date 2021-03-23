@@ -6,6 +6,7 @@ Visit the site hosted [here](https://scheduler-ch.netlify.app/).
 
 ## Final Product
 ![](./docs/main.gif)
+![](./docs/mobile.png)
 
 ## Features
 * Multi-user interaction
