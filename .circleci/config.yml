@@ -19,6 +19,20 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm test
 
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: production
+      - deploy:
+          filters:
+            branches:
+              ignore: production
+          requires:
+            - build
 
 deploy:
   machine:
@@ -37,17 +51,3 @@ deploy:
           git push https://github.com/connie-ho/scheduler.git master:production
 
 
-workflows:
-  version: 2
-  test_and_deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore: production
-      - deploy:
-          filters:
-            branches:
-              ignore: production
-          requires:
-            - build
