@@ -1,6 +1,6 @@
 import { getAppointmentsForDay } from "../helpers/selectors";
 
-const SET_DAY = "SET_DAY";
+// const SET_DAY = "SET_DAY";
 const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
 const SET_INTERVIEW = "SET_INTERVIEW";
 const SET_SPOTS = "SET_SPOTS";
