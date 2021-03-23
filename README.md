@@ -1,23 +1,30 @@
 # Interview Scheduler
 
-## Setup
+Interview Scheduler is React-based scheduling app that allows multiple users at once to create, edit and delete appointments with mentors.
 
-Install dependencies with `npm install`.
+Visit the site hosted [here](https://scheduler-ch.netlify.app/).
 
-## Running Webpack Development Server
+## Final Product
+![](./docs/main.gif)
 
-```sh
-npm start
-```
+## Features
+* Multi-user interaction
+* Create a new appointment
+* Edit an existing appointment
+* Delete an existing appointment with confirmation prior
 
-## Running Jest Test Framework
+## Getting Started
+* Install all dependencies with `npm install`
+* Run the local server with `npm start`
 
-```sh
-npm test
-```
+## Dependencies
+* axios
+* classnames
+* node-sass
+* normalize.css
+* react
+* react-dom
+* react-scripts
 
-## Running Storybook Visual Testbed
 
-```sh
-npm run storybook
-```
+
