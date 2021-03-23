@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Empty(props) {
 
-  return(
+  return (
     <main className="appointment__add">
       <img
         onClick={props.onAdd}

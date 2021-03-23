@@ -8,14 +8,14 @@ import reducer, {
 } from "reducers/application";
 
 
-export default function useApplicationData(){
+export default function useApplicationData() {
 
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
     interviewers: {}
-  })
+  });
   
   // get API Data
   useEffect(()=>{
@@ -27,9 +27,9 @@ export default function useApplicationData(){
       const days = [...all[0].data];
       const appointments = {...all[1].data};
       const interviewers =  {...all[2].data};
-      dispatch({type: SET_APPLICATION_DATA, days, appointments, interviewers})
-    })
-  }, []); 
+      dispatch({type: SET_APPLICATION_DATA, days, appointments, interviewers});
+    });
+  }, []);
 
   
   // set webSocket connection
@@ -37,38 +37,40 @@ export default function useApplicationData(){
     const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
 
     webSocket.onopen = function(e) {
-      webSocket.send("ping")
-    }
+      webSocket.send("ping");
+    };
     
     //listen to data from the websocket server
-    webSocket.onmessage = function (e) {
+    webSocket.onmessage = function(e) {
       
       const res = JSON.parse(e.data);
-      if(res.type === SET_INTERVIEW) {
+      if (res.type === SET_INTERVIEW) {
 
         const id = res.id;
         const interview = res.interview;
 
         const appointment = {
           ...state.appointments[id],
-          interview: interview? { ...interview } : null
+          interview: interview ? { ...interview } : null
         };
         const appointments = {
           ...state.appointments,
           [id]: appointment
         };
 
-        dispatch({type: SET_INTERVIEW, appointments})
-        dispatch({type: SET_SPOTS, id})
-      }  
-    }
+        dispatch({type: SET_INTERVIEW, appointments});
+        dispatch({type: SET_SPOTS, id});
+      }
+    };
 
-    return ()=>{webSocket.close()}; //cleanup function
+    return ()=>{
+      webSocket.close();
+    }; //cleanup function
   },[state.appointments]);
   
-  const setDay = day => dispatch({type: SET_DAY, day})
+  const setDay = day => dispatch({type: SET_DAY, day});
 
-  function bookInterview (id, interview) {
+  function bookInterview(id, interview) {
     
     const appointment = {
       ...state.appointments[id],
@@ -85,11 +87,11 @@ export default function useApplicationData(){
         dispatch({type: SET_INTERVIEW, appointments});
       })
       .then(prev => {
-        dispatch({type: SET_SPOTS, id})
-      })
+        dispatch({type: SET_SPOTS, id});
+      });
   }
 
-  function cancelInterview (id) {
+  function cancelInterview(id) {
 
     const appointment = {
       ...state.appointments[id],
@@ -106,8 +108,8 @@ export default function useApplicationData(){
         dispatch({type: SET_INTERVIEW, appointments});
       })
       .then(res => {
-        dispatch({type: SET_SPOTS, id})
-      })
+        dispatch({type: SET_SPOTS, id});
+      });
   }
 
   return {
@@ -115,7 +117,7 @@ export default function useApplicationData(){
     setDay,
     bookInterview,
     cancelInterview,
-  }
+  };
 
 
 }
