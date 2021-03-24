@@ -17,6 +17,7 @@ Visit the site hosted [here](https://scheduler-ch.netlify.app/).
 ## Getting Started
 * Install all dependencies with `npm install`
 * Run the local server with `npm start`
+* API server can be found at [scheduler-api](https://github.com/connie-ho/scheduler-api)
 
 ## Dependencies
 * axios
